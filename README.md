@@ -23,4 +23,10 @@ A simple command-line Tic Tac Toe game written in C with two modes:
    - `1` for Single Player (play against AI)  
    - `2` for Two Player (play with a friend)  
 3. If Two Player mode, enter player names or press Enter to use defaults.
-4. Players take turns entering a number from 1 to 9 to place their mark (`X` or `O`):  
+4. Players take turns entering a number from 1 to 9 to place their mark (`X` or `O`):
+
+---
+
+## Screenshot
+
+![Tic Tac Toe Game Result](result.png)
