@@ -1,4 +1,4 @@
-# Tic Tac Toe in C
+# Tic Tac Toe game in C
 
 A simple command-line Tic Tac Toe game written in C with two modes:  
 - Single Player (vs Computer AI)  
