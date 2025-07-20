@@ -25,10 +25,9 @@ void get_player_names();
 void trim_newline(char *str);
 
 int main() {
-    int winner;
     char again;
 
-    do {
+    while (1) {
         printf("\n\nTIC TAC TOE\n\n");
         printf("Select mode:\n1. Single Player (vs Computer)\n2. Two Player\n\nChoice: ");
         if (scanf("%d", &mode) != 1) {
@@ -42,62 +41,64 @@ int main() {
             get_player_names();
         }
 
-        turn_count = 1;
-        reset_board();
-        print_board();
-
-        while (1) {
-            switch (mode) {
-                case 1:
-                    if (turn_count % 2 == 1)
-                        human_turn(HUMAN);
-                    else
-                        ai_turn();
-                    break;
-
-                case 2:
-                    {
-                        int current_player = (turn_count % 2 == 1) ? HUMAN : AI;
-                        human_turn(current_player);
-                    }
-                    break;
-
-                default:
-                    printf("Invalid mode selected. Exiting.\n");
-                    return 1;
-            }
-
+        do {
+            int winner;
+            turn_count = 1;
+            reset_board();
             print_board();
 
-            winner = check_winner();
-            if (winner != 0 || is_full()) {
-                break;
+            while (1) {
+                switch (mode) {
+                    case 1:
+                        if (turn_count % 2 == 1)
+                            human_turn(HUMAN);
+                        else
+                            ai_turn();
+                        break;
+
+                    case 2: {
+                        int current_player = (turn_count % 2 == 1) ? HUMAN : AI;
+                        human_turn(current_player);
+                        break;
+                    }
+
+                    default:
+                        printf("Invalid mode selected. Exiting.\n");
+                        return 1;
+                }
+
+                print_board();
+
+                winner = check_winner();
+                if (winner != 0 || is_full()) {
+                    break;
+                }
+
+                turn_count++;
             }
 
-            turn_count++;
-        }
+            if (mode == 1) {
+                if (winner == HUMAN)
+                    printf("\nYou win!\n");
+                else if (winner == AI)
+                    printf("\nComputer wins!\n");
+                else
+                    printf("\nIt's a draw!\n");
+            } else {
+                if (winner == HUMAN)
+                    printf("\n%s wins!\n", player1_name);
+                else if (winner == AI)
+                    printf("\n%s wins!\n", player2_name);
+                else
+                    printf("\nIt's a draw!\n");
+            }
 
-        if (mode == 1) {
-            if (winner == HUMAN)
-                printf("\nYou win!\n");
-            else if (winner == AI)
-                printf("\nComputer wins!\n");
-            else
-                printf("\nIt's a draw!\n");
-        } else {
-            if (winner == HUMAN)
-                printf("\n%s wins!\n", player1_name);
-            else if (winner == AI)
-                printf("\n%s wins!\n", player2_name);
-            else
-                printf("\nIt's a draw!\n");
-        }
+            printf("\nPlay again in the same mode? (y/n): ");
+            scanf(" %c", &again);
+            getchar();
 
-        printf("\nPlay again? (y/n): ");
-        scanf(" %c", &again);
-        getchar();
-
-    } while (again == 'y' || again == 'Y');
+        } while (again == 'y' || again == 'Y');
+    }
 
     return 0;
 }
