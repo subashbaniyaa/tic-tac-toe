@@ -15,12 +15,14 @@ char player1_name[50] = "Player 1";
 char player2_name[50] = "Player 2";
 
 void print_board();
+void print_board_guide();
 void human_turn(int player);
 void ai_turn();
 int check_winner();
 int is_full();
 void reset_board();
-int get_best_move();
+int get_best_move_minimax();
+int minimax(int is_ai);
 void get_player_names();
 void trim_newline(char *str);
 
@@ -45,6 +47,7 @@ int main() {
             int winner;
             turn_count = 1;
             reset_board();
+            print_board_guide();
             print_board();
 
             while (1) {
@@ -112,12 +115,26 @@ void reset_board() {
 }
 
 void print_board() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
     printf("\n");
     for (int i = 0; i < 3; i++) {
         printf(" %c | %c | %c \n", board[i][0], board[i][1], board[i][2]);
         if (i < 2) printf("---|---|---\n");
     }
     printf("\n");
+}
+
+void print_board_guide() {
+    printf("\nBoard positions:\n\n");
+    printf(" 1 | 2 | 3\n");
+    printf("---|---|---\n");
+    printf(" 4 | 5 | 6\n");
+    printf("---|---|---\n");
+    printf(" 7 | 8 | 9\n\n");
 }
 
 void human_turn(int player) {
@@ -144,10 +161,7 @@ void human_turn(int player) {
 
         if (move >= 0 && move < 9 && board[row][col] == ' ') {
             board[row][col] = (player == HUMAN) ? 'X' : 'O';
-            if (player == HUMAN)
-                last_move = move;
-            else
-                AI_last_move = move;
+            last_move = move;
             break;
         } else {
             printf("Invalid move! Try again.\n");
@@ -156,7 +170,13 @@ void human_turn(int player) {
 }
 
 void ai_turn() {
-    int move = get_best_move();
+    int move = get_best_move_minimax();
+
+    if (move == -1) {
+        fprintf(stderr, "Warning: No valid move found.\n");
+        return;
+    }
+
     int row = move / 3;
     int col = move % 3;
     board[row][col] = 'O';
@@ -192,43 +212,47 @@ int is_full() {
     return 1;
 }
 
-int get_best_move() {
+int get_best_move_minimax() {
+    int best_score = -1000;
+    int best_move = -1;
+
     for (int i = 0; i < 9; i++) {
-        int row = i / 3;
-        int col = i % 3;
+        int row = i / 3, col = i % 3;
         if (board[row][col] == ' ') {
             board[row][col] = 'O';
-            if (check_winner() == AI) {
-                board[row][col] = ' ';
-                return i;
-            }
+            int score = minimax(0);
             board[row][col] = ' ';
+            if (score > best_score) {
+                best_score = score;
+                best_move = i;
+            }
         }
     }
+    return best_move;
+}
+
+int minimax(int is_ai) {
+    int winner = check_winner();
+    if (winner == AI) return 10;
+    if (winner == HUMAN) return -10;
+    if (is_full()) return 0;
+
+    int best_score = is_ai ? -1000 : 1000;
 
     for (int i = 0; i < 9; i++) {
-        int row = i / 3;
-        int col = i % 3;
+        int row = i / 3, col = i % 3;
         if (board[row][col] == ' ') {
-            board[row][col] = 'X';
-            if (check_winner() == HUMAN) {
-                board[row][col] = ' ';
-                return i;
-            }
+            board[row][col] = is_ai ? 'O' : 'X';
+            int score = minimax(!is_ai);
             board[row][col] = ' ';
+            if (is_ai)
+                best_score = (score > best_score) ? score : best_score;
+            else
+                best_score = (score < best_score) ? score : best_score;
         }
     }
 
-    int preferred_moves[] = {4, 0, 2, 6, 8, 1, 3, 5, 7};
-    for (int i = 0; i < 9; i++) {
-        int move = preferred_moves[i];
-        int row = move / 3;
-        int col = move % 3;
-        if (board[row][col] == ' ')
-            return move;
-    }
-
-    return 0;
+    return best_score;
 }
 
 void get_player_names() {
