@@ -15,7 +15,6 @@ char player1_name[50] = "Player 1";
 char player2_name[50] = "Player 2";
 
 void print_board();
-void print_board_guide();
 void print_game_screen();
 void human_turn(int player);
 void ai_turn();
@@ -146,17 +145,7 @@ void print_board() {
     printf("\n");
 }
 
-void print_board_guide() {
-    printf("\nREFERENCE:\n\n");
-    printf(" 1 | 2 | 3 \n");
-    printf("---|---|---\n");
-    printf(" 4 | 5 | 6 \n");
-    printf("---|---|---\n");
-    printf(" 7 | 8 | 9 \n\n");
-}
-
 void print_game_screen() {
-    print_board_guide();
     print_board();
 }
 
@@ -191,7 +180,7 @@ void ai_turn() {
     int move = get_best_move();
 
     if (move == -1) {
-        fprintf(stderr, "Warning: No valid move found.\n");
+        fprintf(stderr, "Warning: No valid move found!\n");
         return;
     }
 
