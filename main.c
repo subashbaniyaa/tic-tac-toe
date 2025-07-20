@@ -31,25 +31,40 @@ int main() {
     do {
         printf("\n\nTIC TAC TOE\n\n");
         printf("Select mode:\n1. Single Player (vs Computer)\n2. Two Player\n\nChoice: ");
-        scanf("%d", &mode);
+        if (scanf("%d", &mode) != 1) {
+            while (getchar() != '\n');
+            printf("Invalid input! Defaulting to Single Player mode.\n");
+            mode = 1;
+        }
         getchar();
 
         if (mode == 2) {
             get_player_names();
         }
 
+        turn_count = 1;
         reset_board();
         print_board();
 
         while (1) {
-            if (mode == 1) {
-                if (turn_count % 2 == 1)
-                    human_turn(HUMAN);
-                else
-                    ai_turn();
-            } else {
-                int current_player = (turn_count % 2 == 1) ? HUMAN : AI;
-                human_turn(current_player);
+            switch (mode) {
+                case 1:
+                    if (turn_count % 2 == 1)
+                        human_turn(HUMAN);
+                    else
+                        ai_turn();
+                    break;
+
+                case 2:
+                    {
+                        int current_player = (turn_count % 2 == 1) ? HUMAN : AI;
+                        human_turn(current_player);
+                    }
+                    break;
+
+                default:
+                    printf("Invalid mode selected. Exiting.\n");
+                    return 1;
             }
 
             print_board();
@@ -81,7 +96,6 @@ int main() {
         printf("\nPlay again? (y/n): ");
         scanf(" %c", &again);
         getchar();
-        turn_count = 1;
 
     } while (again == 'y' || again == 'Y');
 
@@ -129,8 +143,10 @@ void human_turn(int player) {
 
         if (move >= 0 && move < 9 && board[row][col] == ' ') {
             board[row][col] = (player == HUMAN) ? 'X' : 'O';
-            if (player == HUMAN) last_move = move;
-            else AI_last_move = move;
+            if (player == HUMAN)
+                last_move = move;
+            else
+                AI_last_move = move;
             break;
         } else {
             printf("Invalid move! Try again.\n");
