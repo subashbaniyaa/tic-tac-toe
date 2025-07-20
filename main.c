@@ -16,28 +16,26 @@ char player2_name[50] = "Player 2";
 
 void print_board();
 void print_board_guide();
+void print_game_screen();
 void human_turn(int player);
 void ai_turn();
 int check_winner();
 int is_full();
 void reset_board();
-int get_best_move_minimax();
+int get_best_move();
 int minimax(int is_ai);
 void get_player_names();
 void trim_newline(char *str);
+int get_valid_menu_choice(int min, int max);
 
 int main() {
     char again;
 
     while (1) {
         printf("\n\nTIC TAC TOE\n\n");
+
         printf("Select mode:\n1. Single Player (vs Computer)\n2. Two Player\n\nChoice: ");
-        if (scanf("%d", &mode) != 1) {
-            while (getchar() != '\n');
-            printf("Invalid input! Defaulting to Single Player mode.\n");
-            mode = 1;
-        }
-        getchar();
+        mode = get_valid_menu_choice(1, 2);
 
         if (mode == 2) {
             get_player_names();
@@ -47,8 +45,8 @@ int main() {
             int winner;
             turn_count = 1;
             reset_board();
-            print_board_guide();
-            print_board();
+
+            print_game_screen();
 
             while (1) {
                 switch (mode) {
@@ -58,19 +56,19 @@ int main() {
                         else
                             ai_turn();
                         break;
-
                     case 2: {
                         int current_player = (turn_count % 2 == 1) ? HUMAN : AI;
                         human_turn(current_player);
                         break;
                     }
-
-                    default:
-                        printf("Invalid mode selected. Exiting.\n");
-                        return 1;
                 }
 
-                print_board();
+#ifdef _WIN32
+                system("cls");
+#else
+                system("clear");
+#endif
+                print_game_screen();
 
                 winner = check_winner();
                 if (winner != 0 || is_full()) {
@@ -100,10 +98,35 @@ int main() {
             scanf(" %c", &again);
             getchar();
 
+#ifdef _WIN32
+            system("cls");
+#else
+            system("clear");
+#endif
+
         } while (again == 'y' || again == 'Y');
     }
 
     return 0;
+}
+
+int get_valid_menu_choice(int min, int max) {
+    int choice;
+    char c;
+
+    while (1) {
+        if (scanf("%d", &choice) != 1) {
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            printf("Invalid input! Please enter a number between %d and %d: ", min, max);
+            continue;
+        }
+        if (choice < min || choice > max) {
+            printf("Invalid choice! Please enter %d or %d: ", min, max);
+            continue;
+        }
+        while ((c = getchar()) != '\n' && c != EOF) {}
+        return choice;
+    }
 }
 
 void reset_board() {
@@ -115,12 +138,7 @@ void reset_board() {
 }
 
 void print_board() {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-    printf("\n");
+    printf("Current Board:\n\n");
     for (int i = 0; i < 3; i++) {
         printf(" %c | %c | %c \n", board[i][0], board[i][1], board[i][2]);
         if (i < 2) printf("---|---|---\n");
@@ -129,12 +147,17 @@ void print_board() {
 }
 
 void print_board_guide() {
-    printf("\nBoard positions:\n\n");
-    printf(" 1 | 2 | 3\n");
+    printf("\nREFERENCE:\n\n");
+    printf(" 1 | 2 | 3 \n");
     printf("---|---|---\n");
-    printf(" 4 | 5 | 6\n");
+    printf(" 4 | 5 | 6 \n");
     printf("---|---|---\n");
-    printf(" 7 | 8 | 9\n\n");
+    printf(" 7 | 8 | 9 \n\n");
+}
+
+void print_game_screen() {
+    print_board_guide();
+    print_board();
 }
 
 void human_turn(int player) {
@@ -149,28 +172,23 @@ void human_turn(int player) {
                    player, (player == HUMAN ? 'X' : 'O'));
         }
 
-        if (scanf("%d", &move) != 1) {
-            while (getchar() != '\n');
-            printf("Invalid input! Enter a number between 1-9.\n");
-            continue;
-        }
+        move = get_valid_menu_choice(1, 9) - 1;
 
-        move--;
         int row = move / 3;
         int col = move % 3;
 
-        if (move >= 0 && move < 9 && board[row][col] == ' ') {
+        if (board[row][col] == ' ') {
             board[row][col] = (player == HUMAN) ? 'X' : 'O';
             last_move = move;
             break;
         } else {
-            printf("Invalid move! Try again.\n");
+            printf("That position is already taken! Try again.\n");
         }
     }
 }
 
 void ai_turn() {
-    int move = get_best_move_minimax();
+    int move = get_best_move();
 
     if (move == -1) {
         fprintf(stderr, "Warning: No valid move found.\n");
@@ -212,7 +230,7 @@ int is_full() {
     return 1;
 }
 
-int get_best_move_minimax() {
+int get_best_move() {
     int best_score = -1000;
     int best_move = -1;
 
