@@ -201,26 +201,34 @@ void save_game_result(const char *winner) {
 void show_game_history() {
     FILE *file = fopen("game_history.txt", "r");
     char line[200];
+
+    clear_screen();
+
+    printf("\n\033[1;34m========== HISTORY ==========\033[0m\n\n");
+
     if (!file) {
-        printf("\nNo game history found.\n");
-        return;
+        printf("No game history found.\n");
+    } else {
+        while (fgets(line, sizeof(line), file)) {
+            printf("%s", line);
+        }
+        fclose(file);
     }
-    printf("\n\033[1;34m---------- GAME HISTORY ----------\033[0m\n");
-    while (fgets(line, sizeof(line), file)) {
-        printf("%s", line);
-    }
-    fclose(file);
+
+    printf("\n\033[1;32mPress ENTER to continue...\033[0m");
+    char temp[10];
+    fgets(temp, sizeof(temp), stdin);
 }
 
 void get_player_names() {
-    printf("Enter name for Player 1 (X), or press ENTER to skip: ");
+    printf("Enter name for Player 1 (\033[1;34mX\033[0m), or press ENTER to skip: ");
     if (!fgets(player1_name, sizeof(player1_name), stdin)) {
         strcpy(player1_name, "Player 1 (X)");
     }
     trim_newline(player1_name);
     if (strlen(player1_name) == 0) strcpy(player1_name, "Player 1 (X)");
 
-    printf("Enter name for Player 2 (O), or press ENTER to skip: ");
+    printf("Enter name for Player 2 (\033[1;31mO\033[0m), or press ENTER to skip: ");
     if (!fgets(player2_name, sizeof(player2_name), stdin)) {
         strcpy(player2_name, "Player 2 (O)");
     }
@@ -236,10 +244,9 @@ int main() {
     while (1) {
         clear_screen();
         printf("\n\033[1;32mTIC TAC TOE\033[0m\n\n");
-        printf("1. Play Game\n2. Game History\n3. Exit\n\nChoice: ");
-
-        menu_choice = get_valid_menu_choice(1, 3);
-
+        printf("1. Play Game\n2. History\n3. Guide\n4. Exit\n\nChoice: ");
+        menu_choice = get_valid_menu_choice(1, 4);
+        
         switch (menu_choice) {
             case 1:
                 printf("\nSelect mode:\n1. Player vs Computer\n2. Two Player\n\nChoice: ");
@@ -287,22 +294,24 @@ int main() {
                         if (winner == HUMAN) {
                             printf("\nYou win!\n");
                         } else if (winner == AI) {
-                            printf("\nComputer wins!\n");
+                            printf("\n\033[1;32mComputer wins!\033[0m\n");
+
                         } else {
-                            printf("\nIt's a draw!\n");
+                            printf("\n\033[1;33mIt's a draw!\033[0m\n");
                         }
                     } else {
                         if (winner == HUMAN) {
-                            printf("\n%s wins!\n", player1_name);
+                            printf("\n\033[1;32m%s wins!\033[0m\n", player1_name);
                             save_game_result(player1_name);
                         } else if (winner == AI) {
-                            printf("\n%s wins!\n", player2_name);
+                            printf("\n\033[1;32m%s wins!\033[0m\n", player2_name);
                             save_game_result(player2_name);
                         } else {
-                            printf("\nIt's a draw!\n");
+                            printf("\n\033[1;33mIt's a draw!\033[0m\n");
                             save_game_result("Draw");
                         }
                     }
+
 
                     printf("\nPlay again in the same mode? (y/n): ");
                     if (!fgets(again_input, sizeof(again_input), stdin)) break;
@@ -314,11 +323,28 @@ int main() {
 
             case 2:
                 show_game_history();
-                printf("\n\nPress ENTER to continue...");
-                fgets(again_input, sizeof(again_input), stdin);
                 break;
 
             case 3:
+                clear_screen();
+                printf("\n\033[1;36m========== GUIDE ==========\033[0m\n\n");
+                printf("Get 3 of your marks in a row to win\n");
+                printf("Type 'quit' anytime to return to home\n");
+
+
+                printf("\nReference Board:\n\n");
+                printf("\033[1m");
+                printf("  1 | 2 | 3\n");
+                printf(" ---|---|---\n");
+                printf("  4 | 5 | 6\n");
+                printf(" ---|---|---\n");
+                printf("  7 | 8 | 9\n");
+                printf("\033[0m");
+                printf("\n\033[1;32mPress ENTER to continue...\033[0m");
+                fgets(again_input, sizeof(again_input), stdin);
+                break;
+
+            case 4:
                 printf("\nThanks for playing!\n");
                 return 0;
         }
