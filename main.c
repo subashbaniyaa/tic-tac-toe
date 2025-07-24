@@ -115,7 +115,7 @@ int check_winner() {
         {board[0][0], board[1][1], board[2][2]},
         {board[0][2], board[1][1], board[2][0]},
     };
-    
+
     for (int i = 0; i < 8; i++)
         if (lines[i][0] != ' ' && lines[i][0] == lines[i][1] && lines[i][1] == lines[i][2])
             return (lines[i][0] == 'X') ? HUMAN : AI;
@@ -243,22 +243,22 @@ int main() {
 
             do {
                 reset_board(board);
-                int winner = 0, quit = 0, turn = 1;
+                int winner = 0, quit_game = 0, turn = 1;
                 clear_screen();
                 print_game_screen();
 
                 while (1) {
                     if (mode == 1) {
                         if (turn % 2 == 1)
-                            quit = human_turn(&p1);
+                            quit_game = human_turn(&p1);
                         else
                             ai_turn();
                     } else {
                         Player *current = (turn % 2 == 1) ? &p1 : &p2;
-                        quit = human_turn(current);
+                        quit_game = human_turn(current);
                     }
 
-                    if (quit) break;
+                    if (quit_game) break;
 
                     clear_screen();
                     print_game_screen();
@@ -267,7 +267,7 @@ int main() {
                     turn++;
                 }
 
-                if (!quit) {
+                if (!quit_game) {
                     if (mode == 1) {
                         if (winner == HUMAN) printf("You win!\n");
                         else if (winner == AI) printf("Computer wins!\n");
@@ -284,11 +284,15 @@ int main() {
                             save_game_result(&p1, &p2, "Draw");
                         }
                     }
+
                     printf("\nPlay again? (y/n): ");
                     fgets(again, sizeof(again), stdin);
                     trim_newline(again);
                     if (again[0] != 'y' && again[0] != 'Y') break;
+                } else {
+                    break;
                 }
+
             } while (1);
 
             continue;
@@ -304,7 +308,6 @@ int main() {
             printf("\n\033[1;36mGAME GUIDE\033[0m\n\n");
             printf("1. Get 3 of your marks in a row to win.\n");
             printf("2. Type 'quit' to return to home.\n");
-
             printf("\nReference Board:\n\n");
             printf("  1 | 2 | 3\n");
             printf(" ---|---|---\n");
