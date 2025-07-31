@@ -23,8 +23,7 @@ int get_valid_menu_choice(int min, int max);
 int get_move_input_with_quit();
 void computer_turn();
 void get_player_names(Player * p1, Player * p2, int mode);
-void save_game_result(Player * p1, Player * p2,
-  const char * winner);
+void save_game_result(Player * p1, Player * p2, const char * winner);
 void show_game_history();
 
 void clear_screen() {
