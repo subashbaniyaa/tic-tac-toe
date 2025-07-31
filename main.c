@@ -49,16 +49,12 @@ void print_board() {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
       char c = board[i][j];
-      #ifdef _WIN32
-      printf(" %c ", c);
-      #else
       if (c == 'X')
         printf(" \033[1;34m%c\033[0m ", c);
       else if (c == 'O')
         printf(" \033[1;31m%c\033[0m ", c);
       else
         printf(" \033[1m%c\033[0m ", c);
-      #endif
       if (j < 2) printf("|");
     }
     printf("\n");
