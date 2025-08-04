@@ -283,7 +283,7 @@ void update_leaderboard(Player* p) {
 void settings_menu(Player* p1, Player* p2) {
     clear_screen();
     printf("\n\033[1;36mSETTINGS\033[0m\n\n");
-    printf("Symbol Customization!\n\n");
+    printf("Symbols Customization!\n\n");
     printf("Current symbols:\n");
     printf("Player 1: %c\n", p1->symbol);
     printf("Player 2: %c\n\n", p2->symbol);
@@ -424,7 +424,8 @@ int main() {
             printf("\n\033[1;36mGAME GUIDE\033[0m\n\n");
             printf("1. Get 3 of your marks in a row to win.\n");
             printf("2. Type 'quit' to return to home.\n");
-            printf("\nReference Board:\n\n");
+            printf("3. You can customize your symbols at settings.\n\n");
+            printf("Reference Board:\n\n");
             printf("  1 | 2 | 3\n");
             printf(" ---|---|---\n");
             printf("  4 | 5 | 6\n");
